@@ -57,7 +57,7 @@ LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
       for (oo in 1:2){
         if (oo==1) n1=n[i,j]-y[i,j]
         if (oo==2) n1=y[i,j]
-        array.LSKP[i,j,,oo]=rmultinom(1,size=n1,prob=prob1)
+        array.LSKP[i,j,,oo]=stats::rmultinom(1,size=n1,prob=prob1)
       }
     }
   }
@@ -95,14 +95,14 @@ LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
     #get parameters
     theta=get.theta(nlk=nlk0+nlk1,gamma,ncomm,nloc) #theta.true#
     theta[theta>hi]=hi; theta[theta<lo]=lo
-    phi=matrix(rbeta(nspp*ncomm,nks1+a.phi,nks0+b.phi),ncomm,nspp) #phi.true#
+    phi=matrix(stats::rbeta(nspp*ncomm,nks1+a.phi,nks0+b.phi),ncomm,nspp) #phi.true#
     phi[phi>hi]=hi; phi[phi<lo]=lo
     prob=theta%*%phi
     prob[prob>hi]=hi; prob[prob<lo]=lo
 
     #re-order groups
     if (i%%50==0 & i<nburn){
-      med=apply(theta,2,mean)
+      med=apply(theta,2,stats::mean)
       ordem=order(med,decreasing=T)
       theta=theta[,ordem]
       phi=phi[ordem,]
@@ -111,7 +111,7 @@ LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
     }
 
     #calculate logl and store results
-    llk[i]=sum(dbinom(y,size=n,prob=prob,log=T))
+    llk[i]=sum(stats::dbinom(y,size=n,prob=prob,log=T))
 
     if (theta.post) theta.out[i,]=theta
     if (!theta.post & i>=nburn) theta.out=theta.out+theta
