@@ -14,22 +14,22 @@ IntegerVector rmultinom_1(NumericVector probs, int size) {
 // This function samples zs when ys=1
 // [[Rcpp::export]]
 List samplez1(NumericMatrix theta, NumericMatrix phi,
-              IntegerMatrix y, int ncommun, int nloc, int nspp,
+              IntegerMatrix y, int nclust, int npix, int nheight,
               NumericVector zeroes) {
 
   //convert array into arma::cube
   NumericVector vecArray=clone(zeroes);
-  arma::cube ArrayLSK(vecArray.begin(),nloc, nspp, ncommun);
+  arma::cube ArrayLSK(vecArray.begin(),npix, nheight, nclust);
 
-  IntegerMatrix nlk(nloc,ncommun);
-  IntegerMatrix nks(ncommun,nspp);
+  IntegerMatrix nlk(npix,nclust);
+  IntegerMatrix nks(nclust,nheight);
 
-  NumericVector prob(ncommun);
-  IntegerVector znew(ncommun);
+  NumericVector prob(nclust);
+  IntegerVector znew(nclust);
 
-  for(int i=0; i<nloc; i++){
-    for (int j=0; j<nspp; j++){
-      for (int k=0; k<ncommun; k++){
+  for(int i=0; i<npix; i++){
+    for (int j=0; j<nheight; j++){
+      for (int k=0; k<nclust; k++){
         prob(k)=theta(i,k)*phi(k,j);
       }
       prob=prob/sum(prob);
@@ -37,7 +37,7 @@ List samplez1(NumericMatrix theta, NumericMatrix phi,
       //multinomial draw
       znew=rmultinom_1(prob, y(i,j));
 
-      for (int k=0; k<ncommun; k++){
+      for (int k=0; k<nclust; k++){
         ArrayLSK(i,j,k)=znew[k];
       }
 
@@ -54,22 +54,22 @@ List samplez1(NumericMatrix theta, NumericMatrix phi,
 // This function samples zs when ys=0
 // [[Rcpp::export]]
 List samplez0(NumericMatrix theta, NumericMatrix OneMinusPhi,
-              IntegerMatrix NminusY, int ncommun, int nloc, int nspp,
+              IntegerMatrix NminusY, int nclust, int npix, int nheight,
               NumericVector zeroes) {
 
   //convert array into arma::cube
   NumericVector vecArray=clone(zeroes);
-  arma::cube ArrayLSK(vecArray.begin(),nloc, nspp, ncommun);
+  arma::cube ArrayLSK(vecArray.begin(),npix, nheight, nclust);
 
-  IntegerMatrix nlk(nloc,ncommun);
-  IntegerMatrix nks(ncommun,nspp);
+  IntegerMatrix nlk(npix,nclust);
+  IntegerMatrix nks(nclust,nheight);
 
-  NumericVector prob(ncommun);
-  IntegerVector znew(ncommun);
+  NumericVector prob(nclust);
+  IntegerVector znew(nclust);
 
-  for(int i=0; i<nloc; i++){
-    for (int j=0; j<nspp; j++){
-      for (int k=0; k<ncommun; k++){
+  for(int i=0; i<npix; i++){
+    for (int j=0; j<nheight; j++){
+      for (int k=0; k<nclust; k++){
         prob(k)=theta(i,k)*OneMinusPhi(k,j);
       }
       prob=prob/sum(prob);
@@ -77,7 +77,7 @@ List samplez0(NumericMatrix theta, NumericMatrix OneMinusPhi,
       //multinomial draw
       znew=rmultinom_1(prob, NminusY(i,j));
 
-      for (int k=0; k<ncommun; k++){
+      for (int k=0; k<nclust; k++){
         ArrayLSK(i,j,k)=znew[k];
       }
 
@@ -107,10 +107,10 @@ NumericMatrix convertVtoTheta(NumericMatrix vmat,
 
 // This function calculates ngreater
 // [[Rcpp::export]]
-IntegerMatrix ngreater(IntegerMatrix nlk,int nloc, int ncommun){
-  IntegerMatrix ngreater(nloc,ncommun);
-  int oo=ncommun-1;
-  IntegerVector tmp(nloc);
+IntegerMatrix ngreater(IntegerMatrix nlk,int npix, int nclust){
+  IntegerMatrix ngreater(npix,nclust);
+  int oo=nclust-1;
+  IntegerVector tmp(npix);
 
   while (oo>=0){
     tmp=tmp+nlk(_,oo);

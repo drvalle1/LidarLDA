@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Fitting the model
+
 We start by showing how to fit the model based on simulated data with 5 clusters. The simulated datasets contain information for 2,000 pixels (rows) and 50 height bins (columns), labeled z1, z2, ..., z50. 
 
 The data in `sim_y5` consist of the number of returned light pulses whereas the data in `sim_n5` consist of the number of incoming light pulses, in each pixel and height bin. As a result, `sim_y5` is always smaller or equal to `sim_n5`.
@@ -21,11 +23,133 @@ The data in `sim_y5` consist of the number of returned light pulses whereas the 
 ```{r setup}
 library(LidarLDA)
 
+#basic characteristics of simulated data
+dim(sim_y5)
+dim(sim_n5)
 
+colnames(sim_y5)
+colnames(sim_n5)
+
+mean(sim_y5<=sim_n5)
 ```
 
+We fit these simulated data using the code below. In this code, we assume a maximum of 10 clusters and we rely on 10000 iterations of the gibbs sampler with a burn-in of 9000 iterations. Finally, we just return the posterior mean parameter estimates instead of all the posterior samples by specifying `theta.post=F` and `phi.post=F`.
+
+```{r, eval=FALSE }
+Model.Results=LidarLDA(y=data.matrix(sim_y5),
+                       n=data.matrix(sim_n5),
+                       nclust=10,
+                       a.phi=1,b.phi=1,
+                       gamma=0.1,ngibbs=10000,
+                       nburn=9000,theta.post=F,phi.post=F)
+```
+
+We can assess convergence by examining the trace-plot of the log-likelihood. This plot suggests that the algorithm has converged.
+
+```{r, echo=F}
+setwd('U:\\independent studies\\LIDAR Tanguro\\vignette results')
+theta=read.csv('theta.csv')
+llk=read.csv('llk.csv')
+Model.Results=list(theta=data.matrix(theta),
+                   llk=llk$x)
+```
 
 ```{r }
+plot(Model.Results$llk,type='l',xlab='Iterations',
+     ylab='Log-likelihood')
+```
 
+According to the `theta` matrix (i.e., the matrix that shows the relative abundance of each cluster for each pixel), our model has identified 5 (out of a maximum of 10) main clusters. These 5 first clusters, on average, represent XX%  
 
+```{r }
+boxplot(Model.Results$theta,xlab='Cluster id',ylab='theta')
+
+sum1=apply(Model.Results$theta[,1:5],1,sum)
+mean(sum1)
+```
+
+Because this is based on simulated data, there is a nice pattern regarding how the relative abundance of each cluster changes as a function of pixel id. This is shown below.
+
+```{r }
+theta=Model.Results$theta
+npix=nrow(theta)
+plot(NA,NA,xlim=c(0,npix),ylim=c(0,1))
+for (i in 1:5) lines(1:npix,theta[,i],col=i)
+```
+
+# Generating simulated data
+
+Here we provide the code showing how the simulated datasets `sim_y5` and `sim_n5` were generated.
+
+```{r }
+rm(list=ls(all=TRUE))
+set.seed(421)
+
+npix=2000
+nheight=50
+nclust=5
+base=floor(npix/(nclust-2))
+
+#generate thetas
+x=seq(from=-1,to=1,length.out=base)
+y=sqrt(1-(x^2))*0.1
+min1=0.0001
+y[y<min1]=min1
+# plot(x,y)
+
+init=floor(npix/nclust)
+seq1=c(seq(from=1,to=npix,by=init),npix)
+
+theta=matrix(min1,npix,nclust)
+for (i in 1:nclust){
+  seq2=seq1[i]:(seq1[i]+base-1)
+  seq3=seq2[seq2<=npix]
+  theta[seq3,i]=y[1:length(seq3)]
+}
+theta=theta/matrix(apply(theta,1,sum),npix,nclust)
+theta.true=theta
+
+plot(NA,NA,xlim=c(0,npix),ylim=c(0,1))
+for (i in 1:nclust) lines(1:npix,theta[,i],col=i)
+
+#generate phi
+tmp=matrix(rbeta(nclust*nheight,0.5,0.5),nclust,nheight)
+tmp[,1:nclust]=diag(0.8,nclust)
+phi=tmp
+round(phi[,1:10],2)
+hist(phi)
+phi.true=phi
+
+#get n
+n2=matrix(round(runif(npix*nheight,min=10,max=200)),npix,nheight)
+
+#generate actual observations y
+y=matrix(0,npix,nheight)
+array1=array(NA,dim=c(npix,nheight,nclust,2))
+for (i in 1:npix){
+  for (j in 1:nheight){
+    tmp=rmultinom(1,size=n2[i,j],prob=theta[i,])
+    for (k in 1:nclust){
+      tmp1=rbinom(1,size=tmp[k],prob=phi[k,j])
+      array1[i,j,k,1]=tmp1
+      array1[i,j,k,2]=tmp[k]-tmp1
+      y[i,j]=y[i,j]+tmp1
+    }
+  }
+}
+mean(y<=n2)
+image(data.matrix(y/n2))
+
+#make nice output table
+colnames(y)=paste('z',1:nheight,sep='')
+
+sim_y5=y
+sim_n5=n2
+```
+
+# Editing LIDAR data
+
+To use this model to fit empirical LIDAR data, it is important to format the data correctly. Here we show how we have formatted an empirical LIDAR dataset. We start by assuming that we have a matrix which holds the number of returns in each pixel and each height bin.
+
+```{r }
 ```

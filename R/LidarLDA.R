@@ -11,7 +11,7 @@ NULL
 #'
 #' @param y P x H matrix containing the number of returns for each pixel in each height class
 #' @param n P x H matrix containing the number of incoming light pulses for each pixel in each height class
-#' @param ncomm maximum number of clusters
+#' @param nclust maximum number of clusters
 #' @param a.phi parameter > 0 for the prior of phi
 #' @param b.phi parameter > 0 for the prior of phi
 #' @param gamma parameter between 0 and 1 for the prior of the truncated stick-breaking prior
@@ -37,23 +37,23 @@ NULL
 #' @importFrom stats rbeta dbinom rmultinom
 #' @export
 
-LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
+LidarLDA=function(y,n,nclust,a.phi,b.phi,gamma,ngibbs,nburn,
                      theta.post,phi.post){
   #useful stuff
-  nloc=nrow(y)
-  nspp=ncol(y)
+  npix=nrow(y)
+  nheight=ncol(y)
   hi=0.999999
   lo=0.000001
   NminusY=n-y
 
   #initial values
-  theta=matrix(1/ncomm,nloc,ncomm)
-  phi=matrix(0.5,ncomm,nspp)
+  theta=matrix(1/nclust,npix,nheight)
+  phi=matrix(0.5,nclust,nheight)
 
-  array.LSKP=array(NA,dim=c(nloc,nspp,ncomm,2))
-  prob1=rep(1/ncomm,ncomm)
-  for (i in 1:nloc){
-    for (j in 1:nspp){
+  array.LSKP=array(NA,dim=c(npix,nheight,nclust,2))
+  prob1=rep(1/nclust,nclust)
+  for (i in 1:npix){
+    for (j in 1:nheight){
       for (oo in 1:2){
         if (oo==1) n1=n[i,j]-y[i,j]
         if (oo==2) n1=y[i,j]
@@ -63,22 +63,22 @@ LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
   }
 
   #to store outcomes from gibbs sampler
-  if (theta.post)  theta.out=matrix(NA,ngibbs,ncomm*nloc)
-  if (!theta.post) theta.out=matrix(0,nloc,ncomm)
-  if (phi.post)  phi.out=matrix(NA,ngibbs,ncomm*nspp)
-  if (!phi.post) phi.out=matrix(0,ncomm,nspp)
+  if (theta.post)  theta.out=matrix(NA,ngibbs,nclust*npix)
+  if (!theta.post) theta.out=matrix(0,npix,nclust)
+  if (phi.post)  phi.out=matrix(NA,ngibbs,nclust*nheight)
+  if (!phi.post) phi.out=matrix(0,nclust,nheight)
 
   llk=rep(NA,ngibbs)
 
   #run gibbs sampler
   options(warn=2)
-  zeroes=array(0,dim=c(nloc,nspp,ncomm))
+  zeroes=array(0,dim=c(npix,nheight,nclust))
   for (i in 1:ngibbs){
     print(i)
 
     #sample z when y=0
     tmp0=samplez0(theta=theta, OneMinusPhi=1-phi,
-                  NminusY=NminusY, ncommun=ncomm, nloc=nloc, nspp=nspp,
+                  NminusY=NminusY, nclust=nclust, npix=npix, nheight=nheight,
                   zeroes=zeroes)
     array.LSKP[,,,1]=tmp0$ArrayLSK
     nlk0=tmp0$nlk
@@ -86,23 +86,23 @@ LidarLDA=function(y,n,ncomm,a.phi,b.phi,gamma,ngibbs,nburn,
 
     #sample z when y=1
     tmp1=samplez1(theta=theta, phi=phi,
-                  y=y, ncommun=ncomm, nloc=nloc, nspp=nspp,
+                  y=y, nclust=nclust, npix=npix, nheight=nheight,
                   zeroes=zeroes)
     array.LSKP[,,,2]=tmp1$ArrayLSK
     nlk1=tmp1$nlk
     nks1=tmp1$nks
 
     #get parameters
-    theta=get.theta(nlk=nlk0+nlk1,gamma,ncomm,nloc) #theta.true#
+    theta=get.theta(nlk=nlk0+nlk1,gamma,nclust,npix) #theta.true#
     theta[theta>hi]=hi; theta[theta<lo]=lo
-    phi=matrix(stats::rbeta(nspp*ncomm,nks1+a.phi,nks0+b.phi),ncomm,nspp) #phi.true#
+    phi=matrix(stats::rbeta(nheight*nclust,nks1+a.phi,nks0+b.phi),nclust,nheight) #phi.true#
     phi[phi>hi]=hi; phi[phi<lo]=lo
     prob=theta%*%phi
     prob[prob>hi]=hi; prob[prob<lo]=lo
 
     #re-order groups
     if (i%%50==0 & i<nburn){
-      med=apply(theta,2,stats::mean)
+      med=apply(theta,2,mean)
       ordem=order(med,decreasing=T)
       theta=theta[,ordem]
       phi=phi[ordem,]

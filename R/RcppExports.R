@@ -2,22 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rmultinom_1 <- function(probs, size) {
-    .Call('_LidarLDA_rmultinom_1', PACKAGE = 'LidarLDA', probs, size)
+    .Call(`_LidarLDA_rmultinom_1`, probs, size)
 }
 
-samplez1 <- function(theta, phi, y, ncommun, nloc, nspp, zeroes) {
-    .Call('_LidarLDA_samplez1', PACKAGE = 'LidarLDA', theta, phi, y, ncommun, nloc, nspp, zeroes)
+samplez1 <- function(theta, phi, y, nclust, npix, nheight, zeroes) {
+    .Call(`_LidarLDA_samplez1`, theta, phi, y, nclust, npix, nheight, zeroes)
 }
 
-samplez0 <- function(theta, OneMinusPhi, NminusY, ncommun, nloc, nspp, zeroes) {
-    .Call('_LidarLDA_samplez0', PACKAGE = 'LidarLDA', theta, OneMinusPhi, NminusY, ncommun, nloc, nspp, zeroes)
+samplez0 <- function(theta, OneMinusPhi, NminusY, nclust, npix, nheight, zeroes) {
+    .Call(`_LidarLDA_samplez0`, theta, OneMinusPhi, NminusY, nclust, npix, nheight, zeroes)
 }
 
 convertVtoTheta <- function(vmat, prod) {
-    .Call('_LidarLDA_convertVtoTheta', PACKAGE = 'LidarLDA', vmat, prod)
+    .Call(`_LidarLDA_convertVtoTheta`, vmat, prod)
 }
 
-ngreater <- function(nlk, nloc, ncommun) {
-    .Call('_LidarLDA_ngreater', PACKAGE = 'LidarLDA', nlk, nloc, ncommun)
+ngreater <- function(nlk, npix, nclust) {
+    .Call(`_LidarLDA_ngreater`, nlk, npix, nclust)
 }
 

@@ -24,36 +24,36 @@ BEGIN_RCPP
 END_RCPP
 }
 // samplez1
-List samplez1(NumericMatrix theta, NumericMatrix phi, IntegerMatrix y, int ncommun, int nloc, int nspp, NumericVector zeroes);
-RcppExport SEXP _LidarLDA_samplez1(SEXP thetaSEXP, SEXP phiSEXP, SEXP ySEXP, SEXP ncommunSEXP, SEXP nlocSEXP, SEXP nsppSEXP, SEXP zeroesSEXP) {
+List samplez1(NumericMatrix theta, NumericMatrix phi, IntegerMatrix y, int nclust, int npix, int nheight, NumericVector zeroes);
+RcppExport SEXP _LidarLDA_samplez1(SEXP thetaSEXP, SEXP phiSEXP, SEXP ySEXP, SEXP nclustSEXP, SEXP npixSEXP, SEXP nheightSEXP, SEXP zeroesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type phi(phiSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type ncommun(ncommunSEXP);
-    Rcpp::traits::input_parameter< int >::type nloc(nlocSEXP);
-    Rcpp::traits::input_parameter< int >::type nspp(nsppSEXP);
+    Rcpp::traits::input_parameter< int >::type nclust(nclustSEXP);
+    Rcpp::traits::input_parameter< int >::type npix(npixSEXP);
+    Rcpp::traits::input_parameter< int >::type nheight(nheightSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type zeroes(zeroesSEXP);
-    rcpp_result_gen = Rcpp::wrap(samplez1(theta, phi, y, ncommun, nloc, nspp, zeroes));
+    rcpp_result_gen = Rcpp::wrap(samplez1(theta, phi, y, nclust, npix, nheight, zeroes));
     return rcpp_result_gen;
 END_RCPP
 }
 // samplez0
-List samplez0(NumericMatrix theta, NumericMatrix OneMinusPhi, IntegerMatrix NminusY, int ncommun, int nloc, int nspp, NumericVector zeroes);
-RcppExport SEXP _LidarLDA_samplez0(SEXP thetaSEXP, SEXP OneMinusPhiSEXP, SEXP NminusYSEXP, SEXP ncommunSEXP, SEXP nlocSEXP, SEXP nsppSEXP, SEXP zeroesSEXP) {
+List samplez0(NumericMatrix theta, NumericMatrix OneMinusPhi, IntegerMatrix NminusY, int nclust, int npix, int nheight, NumericVector zeroes);
+RcppExport SEXP _LidarLDA_samplez0(SEXP thetaSEXP, SEXP OneMinusPhiSEXP, SEXP NminusYSEXP, SEXP nclustSEXP, SEXP npixSEXP, SEXP nheightSEXP, SEXP zeroesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type OneMinusPhi(OneMinusPhiSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type NminusY(NminusYSEXP);
-    Rcpp::traits::input_parameter< int >::type ncommun(ncommunSEXP);
-    Rcpp::traits::input_parameter< int >::type nloc(nlocSEXP);
-    Rcpp::traits::input_parameter< int >::type nspp(nsppSEXP);
+    Rcpp::traits::input_parameter< int >::type nclust(nclustSEXP);
+    Rcpp::traits::input_parameter< int >::type npix(npixSEXP);
+    Rcpp::traits::input_parameter< int >::type nheight(nheightSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type zeroes(zeroesSEXP);
-    rcpp_result_gen = Rcpp::wrap(samplez0(theta, OneMinusPhi, NminusY, ncommun, nloc, nspp, zeroes));
+    rcpp_result_gen = Rcpp::wrap(samplez0(theta, OneMinusPhi, NminusY, nclust, npix, nheight, zeroes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -70,15 +70,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // ngreater
-IntegerMatrix ngreater(IntegerMatrix nlk, int nloc, int ncommun);
-RcppExport SEXP _LidarLDA_ngreater(SEXP nlkSEXP, SEXP nlocSEXP, SEXP ncommunSEXP) {
+IntegerMatrix ngreater(IntegerMatrix nlk, int npix, int nclust);
+RcppExport SEXP _LidarLDA_ngreater(SEXP nlkSEXP, SEXP npixSEXP, SEXP nclustSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerMatrix >::type nlk(nlkSEXP);
-    Rcpp::traits::input_parameter< int >::type nloc(nlocSEXP);
-    Rcpp::traits::input_parameter< int >::type ncommun(ncommunSEXP);
-    rcpp_result_gen = Rcpp::wrap(ngreater(nlk, nloc, ncommun));
+    Rcpp::traits::input_parameter< int >::type npix(npixSEXP);
+    Rcpp::traits::input_parameter< int >::type nclust(nclustSEXP);
+    rcpp_result_gen = Rcpp::wrap(ngreater(nlk, npix, nclust));
     return rcpp_result_gen;
 END_RCPP
 }
