@@ -39,10 +39,10 @@ nclust=10       #maximum number of clusters
 
 Model.Results=LidarLDA(y=y,
                        n=n,
-                       ncomm=nclust,
+                       nclust=nclust,
                        a.phi=1,b.phi=1,
                        gamma=0.1,ngibbs=100,
                        nburn=50,theta.post=F,phi.post=F)
 ```
 
-A more elaborate example can be found in the vignette of the R package.
+A more elaborate example can be found in the vignette of this package.

@@ -52,4 +52,4 @@ Model.Results=LidarLDA(y=y,
                        nburn=50,theta.post=F,phi.post=F)
 ```
 
-A more elaborate example can be found in the vignette of the R package.
+A more elaborate example can be found in the vignette of this package.

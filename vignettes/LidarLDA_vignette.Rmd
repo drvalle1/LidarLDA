@@ -59,7 +59,7 @@ plot(Model.Results$llk,type='l',xlab='Iterations',
      ylab='Log-likelihood')
 ```
 
-According to the `theta` matrix (i.e., the matrix that shows the relative abundance of each cluster for each pixel), our model has identified 5 (out of a maximum of 10) main clusters. These 5 first clusters, on average, represent XX%  
+According to the `theta` matrix (i.e., the matrix that shows the relative abundance of each cluster for each pixel), our model has identified 5 (out of a maximum of 10) main clusters. These 5 first clusters, on average, represent 99.8% of all observations in each pixel. 
 
 ```{r }
 boxplot(Model.Results$theta,xlab='Cluster id',ylab='theta')
@@ -79,7 +79,7 @@ for (i in 1:5) lines(1:npix,theta[,i],col=i)
 
 # Generating simulated data
 
-Here we provide the code showing how the simulated datasets `sim_y5` and `sim_n5` were generated.
+Here we provide the code showing how the simulated data sets `sim_y5` and `sim_n5` were generated.
 
 ```{r }
 rm(list=ls(all=TRUE))
@@ -149,7 +149,58 @@ sim_n5=n2
 
 # Editing LIDAR data
 
-To use this model to fit empirical LIDAR data, it is important to format the data correctly. Here we show how we have formatted an empirical LIDAR dataset. We start by assuming that we have a matrix which holds the number of returns in each pixel and each height bin.
+To use this model to fit empirical LIDAR data, it is important to format the data correctly. Here we show how we have formatted an empirical LIDAR data set. 
+
+We start by assuming that we have a matrix called `lidar_data` which holds the number of returns in each pixel and each height bin. Notice that this matrix also contains the x and y coordinates of each pixel.  
 
 ```{r }
+library(LidarLDA)
+
+dim(lidar_data)
+colnames(lidar_data)
+```
+
+Next, we remove height bins for which there is not much data because these are relatively uninformative. In our case, there are almost no returns in bins above 27.5 m, as shown below. As a result, we sum all of the returns above this threshold and assign these results to the last height bin (i.e., `z27.5`).
+
+```{r }
+dat=lidar_data
+
+#get rid of height bins with few data
+apply(dat,2,sum)
+limite='z27.5'
+ind=which(colnames(dat)==limite)
+dat1=dat
+
+#all of the returns above z28.5 get stored in the highest bin
+dat1[,ind]=apply(dat1[,ind:ncol(dat)],1,sum)
+dat2=dat1[,1:ind]
+ind=grep('z',colnames(dat2))
+dat3=dat2[,ind]
+```
+
+Finally, I create the matrices `y` and `n`, containing the number of returned light pulses and incoming light pulses, respectively, for each pixel and each height bin.
+
+```{r }
+y=z=dat3
+nheight=ncol(z)
+npix=nrow(z)
+
+#get n matrix
+n=matrix(NA,npix,nheight)
+for (i in nheight:2){
+  n[,i]=rowSums(z)
+  z=z[,-i]
+}
+n[,1]=y[,1]
+
+#get names
+colnames(n)=colnames(y)
+
+#eliminate the first column because y/n is always equal to 1 for that column
+n1=n[,-1]
+y1=y[,-1]
+
+#look at absorptance probabilities
+prob=y1/n1
+image(data.matrix(prob))
 ```
