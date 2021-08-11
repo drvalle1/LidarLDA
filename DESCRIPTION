@@ -19,3 +19,9 @@ Imports:
 LinkingTo: 
     Rcpp,
     RcppArmadillo
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

@@ -1,0 +1,22 @@
+---
+title: "LidarLDA_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LidarLDA_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+We start by showing how to fit the model based on simulated data
+
+```{r setup}
+library(LidarLDA)
+
+```
