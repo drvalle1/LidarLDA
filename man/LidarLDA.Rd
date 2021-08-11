@@ -4,14 +4,25 @@
 \alias{LidarLDA}
 \title{Fit LDA model to LIDAR data}
 \usage{
-LidarLDA(y, n, ncomm, a.phi, b.phi, gamma, ngibbs, nburn, theta.post, phi.post)
+LidarLDA(
+  y,
+  n,
+  nclust,
+  a.phi,
+  b.phi,
+  gamma,
+  ngibbs,
+  nburn,
+  theta.post,
+  phi.post
+)
 }
 \arguments{
 \item{y}{P x H matrix containing the number of returns for each pixel in each height class}
 
 \item{n}{P x H matrix containing the number of incoming light pulses for each pixel in each height class}
 
-\item{ncomm}{maximum number of clusters}
+\item{nclust}{maximum number of clusters}
 
 \item{a.phi}{parameter > 0 for the prior of phi}
 

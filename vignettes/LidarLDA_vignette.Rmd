@@ -21,6 +21,7 @@ We start by showing how to fit the model based on simulated data with 5 clusters
 The data in `sim_y5` consist of the number of returned light pulses whereas the data in `sim_n5` consist of the number of incoming light pulses, in each pixel and height bin. As a result, `sim_y5` is always smaller or equal to `sim_n5`.
 
 ```{r setup}
+#devtools::install_github("drvalle1/LidarLDA")
 library(LidarLDA)
 
 #basic characteristics of simulated data
@@ -47,14 +48,13 @@ Model.Results=LidarLDA(y=data.matrix(sim_y5),
 We can assess convergence by examining the trace-plot of the log-likelihood. This plot suggests that the algorithm has converged.
 
 ```{r, echo=F}
-setwd('U:\\independent studies\\LIDAR Tanguro\\vignette results')
-theta=read.csv('theta.csv')
-llk=read.csv('llk.csv')
+usethis::use_data(theta, internal = TRUE)
 Model.Results=list(theta=data.matrix(theta),
                    llk=llk$x)
 ```
 
 ```{r }
+data(sysdata, envir=environment())
 plot(Model.Results$llk,type='l',xlab='Iterations',
      ylab='Log-likelihood')
 ```
