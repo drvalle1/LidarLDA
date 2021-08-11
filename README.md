@@ -1,24 +1,16 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
 
 # LidarLDA
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of LidarLDA is to fit a modified version of the Latent Dirichlet Allocation (LDA) model to LIDAR data. This model will a) characterize each pixel in relation to the relative abundance of clusters; and b) characterize each cluster in relation to its absorptance probabilities. 
+The goal of LidarLDA is to fit a modified version of the Latent
+Dirichlet Allocation (LDA) model to LIDAR data. This model will a)
+characterize each pixel in relation to the relative abundance of
+clusters; and b) characterize each cluster in relation to its
+absorptance probabilities.
 
 ## Installation
 
@@ -28,11 +20,12 @@ You can install this package from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("drvalle1/LidarLDA")
 ```
+
 ## Example
 
 This is a basic example which shows how to run LidarLDA:
 
-```{r example, results='hide'}
+``` r
 library(LidarLDA)
 
 ## basic example code
