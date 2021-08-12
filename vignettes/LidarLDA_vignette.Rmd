@@ -49,7 +49,7 @@ Model.Results=LidarLDA(y=data.matrix(sim_y5),
 We can assess convergence by examining the trace-plot of the log-likelihood. This plot suggests that the algorithm has converged.
 
 ```{r, echo=F}
-#using pre-computed results
+#using pre-computed results stored as internal data
 Model.Results=list(theta=LidarLDA:::theta,
                    llk=LidarLDA:::llk$x)
 ```
@@ -136,7 +136,7 @@ for (i in 1:npix){
   }
 }
 mean(y<=n2)
-image(data.matrix(y/n2))
+# image(data.matrix(y/n2))
 
 #add column names
 colnames(y)=colnames(n2)=paste('z',1:nheight,sep='')
@@ -144,7 +144,7 @@ sim_y5=y
 sim_n5=n2
 ```
 
-## Editing LIDAR data
+## Editing empirical LIDAR data
 
 To use this model to fit empirical LIDAR data, it is important to format the data correctly. Here we show how we have formatted an empirical LIDAR data set. 
 
@@ -157,18 +157,18 @@ dim(lidar_data)
 colnames(lidar_data)
 ```
 
-Next, we remove height bins for which there is not much data because these are relatively uninformative. In our case, there are almost no returns in bins above 27.5 m, as shown below. As a result, we sum all of the returns above this threshold and assign these results to the last height bin (i.e., `z27.5`).
+Next, we remove height bins for which there is not much data because these are relatively uninformative. In our case, there are almost no returns in bins above 31.5 m, as shown below. As a result, we sum all of the returns above this threshold and assign these results to the last height bin (i.e., `z31.5`).
 
 ```{r }
 dat=lidar_data
 
 #get rid of height bins with few data
 apply(dat,2,sum)
-limite='z27.5'
+limite='z31.5'
 ind=which(colnames(dat)==limite)
 dat1=dat
 
-#all of the returns above z27.5 get stored in the highest bin
+#all of the returns above this threshold get stored in the highest bin
 dat1[,ind]=apply(dat1[,ind:ncol(dat)],1,sum)
 dat2=dat1[,1:ind]
 ind=grep('z',colnames(dat2))
@@ -196,8 +196,69 @@ colnames(n)=colnames(y)
 #eliminate the first column because y/n is always equal to 1 for that column
 n1=n[,-1]
 y1=y[,-1]
+```
 
-#examine absorptance probabilities
+Finally, to reduce the number of light pulses, ensure an approximately even number of pulses in each height bin in each pixel (here arbitrarily set to 100), and ensure more rapid convergence, we finish formating these data using the following code.
+
+```{r }
+set.seed(1)
 prob=y1/n1
-image(data.matrix(prob))
+cond=n1>100
+n1[cond]=100
+y1[cond]=rbinom(sum(cond),size=100,prob[cond])
+```
+
+## Fitting empirical LIDAR data and displaying results
+
+We can now fit LidarLDA to the `y1` and `n1` matrices.
+
+```{r, eval=F}
+Model.Results=LidarLDA(y=data.matrix(y1),
+                       n=data.matrix(n1),
+                       nclust=10,
+                       a.phi=1,b.phi=1,
+                       gamma=0.1,ngibbs=10000,
+                       nburn=9000,theta.post=F,phi.post=F)
+```
+
+```{r ,echo=F }
+#using pre-computed results stored as internal data
+Model.Results=list(theta=LidarLDA:::theta_empirical,
+                   llk=LidarLDA:::llk$x,
+                   phi=LidarLDA:::phi_empirical)
+```
+
+Our results suggest that 3 main clusters exist in this data set. 
+
+```{r }
+boxplot(Model.Results$theta,ylab='theta',xlab='Cluster id')
+```
+
+The estimated absorptance probabilities for each cluster suggest that cluster 2 includes a combination of short and high vegetation while cluster 1 is comprised mostly of short vegetation. Finally, cluster 3 is a vegetation type with intermediate height.
+
+```{r }
+par(mfrow=c(3,1),mar=rep(1,4),oma=c(4,4,1,1))
+phi=data.matrix(Model.Results$phi)
+plot(phi[1,],type='h')
+plot(phi[2,],type='h')
+plot(phi[3,],type='h')
+mtext(side=1,at=0.5,outer=T,line=1,'Height (m)')
+mtext(side=2,at=0.5,outer=T,line=1,'Absorptance probability')
+```
+
+The spatial distribution of clusters 1 and 2 are shown below.
+
+```{r }
+library('ggplot2')
+theta=Model.Results$theta
+colnames(theta)=paste0('cluster',1:10)
+results=cbind(coord,theta)
+
+ggplot() +
+  geom_tile(data = results, alpha = 0.8,aes(x = xcoord, y = ycoord,fill = cluster1)) +
+  scale_fill_gradient2(low = "cyan", mid = "red",high='purple',limits=c(0,1),midpoint=0.5)
+
+ggplot() +
+  geom_tile(data = results, alpha = 0.8,aes(x = xcoord, y = ycoord,fill = cluster2)) +
+  scale_fill_gradient2(low = "cyan", mid = "red",high='purple',limits=c(0,1),midpoint=0.5)
 ```
