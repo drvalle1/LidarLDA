@@ -17,8 +17,8 @@ absorptance probabilities.
 You can install this package from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("drvalle1/LidarLDA")
+library("devtools")
+devtools::install_github("drvalle1/LidarLDA",build_vignettes=T)
 ```
 
 ## Example
@@ -46,3 +46,8 @@ Model.Results=LidarLDA(y=y,
 ```
 
 A more elaborate example can be found in the vignette of this package.
+You can access this vignette using the code below:
+
+``` r
+browseVignettes("LidarLDA")
+```

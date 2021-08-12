@@ -24,8 +24,8 @@ The goal of LidarLDA is to fit a modified version of the Latent Dirichlet Alloca
 
 You can install this package from [GitHub](https://github.com/) with:
 
-``` r
-# install.packages("devtools")
+``` {r, eval=F}
+library("devtools")
 devtools::install_github("drvalle1/LidarLDA",build_vignettes=T)
 ```
 ## Example
@@ -52,7 +52,7 @@ Model.Results=LidarLDA(y=y,
                        nburn=50,theta.post=F,phi.post=F)
 ```
 
-A more elaborate example can be found in the vignette of this package.
+A more elaborate example can be found in the vignette of this package. You can access this vignette using the code below:
 
 ```{r ,eval=F}
 browseVignettes("LidarLDA")
