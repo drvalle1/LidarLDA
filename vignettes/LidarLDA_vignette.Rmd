@@ -132,14 +132,15 @@ n1=n[,-1]
 y1=y[,-1]
 ```
 
-Finally, to reduce the number of light pulses, ensure an approximately even number of pulses in each height bin in each pixel (here arbitrarily set to 100), and ensure more rapid convergence, we finish formatting these data using the following code.
+Finally, to reduce the number of light pulses, ensure an approximately even number of pulses in each height bin in each pixel (here arbitrarily set to 500), and ensure more rapid convergence, we finish formatting these data using the following code.
 
 ```{r }
 set.seed(1)
 prob=y1/n1
-cond=n1>100
-n1[cond]=100
-y1[cond]=rbinom(sum(cond),size=100,prob[cond])
+thresh=500
+cond=n1>thresh
+n1[cond]=thresh
+y1[cond]=rbinom(sum(cond),size=thresh,prob[cond])
 ```
 
 ## Fitting empirical LIDAR data
@@ -164,25 +165,23 @@ Model.Results=list(theta=LidarLDA:::theta_empirical,
 
 ## Interpreting and visualizing model results
 
-Our results suggest that 3 main clusters exist in this data set. 
+Our results suggest that 6 main clusters exist in this data set. 
 
 ```{r }
 boxplot(Model.Results$theta,ylab='theta',xlab='Cluster id')
 ```
 
-The estimated absorptance probabilities for each cluster suggest that cluster 2 includes a combination of short and high vegetation while cluster 1 is comprised mostly of short vegetation. Finally, cluster 3 is a vegetation type with intermediate height.
+The estimated absorptance probabilities for each cluster are stored in the object `phi`. These results help to characterize the identified clusters. For example, these results suggest that cluster 1 represents bare ground, grasses and short vegetation while clusters 2 and 3 have increasingly taller vegetation. 
 
 ```{r }
-par(mfrow=c(3,1),mar=rep(1,4),oma=c(4,4,1,1))
+par(mfrow=c(3,2),mar=c(1,1,3,1),oma=c(4,4,1,1))
 phi=data.matrix(Model.Results$phi)
-plot(phi[1,],type='h')
-plot(phi[2,],type='h')
-plot(phi[3,],type='h')
+for (i in 1:6) plot(phi[i,],type='h',main=i,xlab='')
 mtext(side=1,at=0.5,outer=T,line=1,'Height (m)')
 mtext(side=2,at=0.5,outer=T,line=1,'Absorptance probability')
 ```
 
-The spatial distribution of clusters 1 and 2 are shown below.
+The spatial distribution of clusters 1-3 are shown below.
 
 ```{r }
 library('ggplot2')
@@ -197,11 +196,15 @@ ggplot() +
 ggplot() +
   geom_tile(data = results, alpha = 0.8,aes(x = xcoord, y = ycoord,fill = cluster2)) +
   scale_fill_gradient2(low = "cyan", mid = "red",high='purple',limits=c(0,1),midpoint=0.5)
+
+ggplot() +
+  geom_tile(data = results, alpha = 0.8,aes(x = xcoord, y = ycoord,fill = cluster3)) +
+  scale_fill_gradient2(low = "cyan", mid = "red",high='purple',limits=c(0,1),midpoint=0.5)
 ```
 
 ## Generating simulated data
 
-Here we provide the code showing how the simulated data sets `sim_y5` and `sim_n5` were generated. This code can be useful for users interested in modifying the simulated data sets to see how the model behaves for different settings.
+Here we provide the code showing how the simulated data sets `sim_y5` and `sim_n5`, used in the beginning of this vignette, were generated. This code can be useful for users interested in modifying the simulated data sets to see how the model behaves for different settings.
 
 ```{r }
 rm(list=ls(all=TRUE))
@@ -236,7 +239,7 @@ for (i in 1:nclust) lines(1:npix,theta[,i],col=i)
 
 #generate phi
 tmp=matrix(rbeta(nclust*nheight,0.5,0.5),nclust,nheight)
-tmp[,1:nclust]=diag(0.8,nclust)
+tmp[,1:nclust]=diag(0.8,nclust)  
 phi=tmp
 phi.true=phi
 
