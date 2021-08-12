@@ -172,6 +172,7 @@ dat1=dat
 dat1[,ind]=apply(dat1[,ind:ncol(dat)],1,sum)
 dat2=dat1[,1:ind]
 ind=grep('z',colnames(dat2))
+coord=dat2[,-ind]
 dat3=dat2[,ind]
 ```
 
