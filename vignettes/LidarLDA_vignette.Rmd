@@ -22,7 +22,7 @@ The data in `sim_y5` consist of the number of returned light pulses whereas the 
 
 ```{r setup}
 #library('devtools')
-#devtools::install_github("drvalle1/LidarLDA")
+#devtools::install_github("drvalle1/LidarLDA",build_vignettes=T)
 library(LidarLDA)
 
 #basic characteristics of simulated data
