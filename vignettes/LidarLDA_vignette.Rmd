@@ -109,7 +109,7 @@ coord=dat2[,-ind]
 dat3=dat2[,ind]
 ```
 
-Finally, I create the matrices `y` and `n`, containing the number of returned light pulses and incoming light pulses, respectively, for each pixel and each height bin.
+I create the matrices `y` and `n`, containing the number of returned light pulses and incoming light pulses, respectively, for each pixel and each height bin.
 
 ```{r }
 y=z=dat3
@@ -132,7 +132,7 @@ n1=n[,-1]
 y1=y[,-1]
 ```
 
-Finally, to reduce the number of light pulses, ensure an approximately even number of pulses in each height bin in each pixel (here arbitrarily set to 500), and ensure more rapid convergence, we finish formatting these data using the following code.
+Finally, we finish formatting these data by randomly sampling 500 pulses whenever the number of incoming pulses is greater than 500. This procedure ensures an approximately even number of pulses in each height bin in each pixel (here arbitrarily set to 500) and can help ensure a more rapid convergence of the algorithm.
 
 ```{r }
 set.seed(1)
