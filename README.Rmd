@@ -95,7 +95,7 @@ sum1=apply(Model.Results$theta[,1:5],1,sum)
 mean(sum1)
 ```
 
-Because this is based on simulated data, there is a nice pattern regarding how the relative abundance of each cluster changes as a function of topography. This is shown below.
+Because this is based on simulated data, there is a nice pattern regarding how the relative abundance of each cluster changes as a function of topography. This is shown below. In this figure, each cluster is depicted with a different color and relative abundance is given by color opacity (i.e., 0 is transparent and 1 is completely opaque). Contour lines show topography. 
 
 ```{r }
 theta=Model.Results$theta[,1:5]
@@ -122,11 +122,16 @@ res5
 
 ## Using the folding-in operation to detect temporal changes
 
-If we have LiDAR data for the same area but collected in another year (i.e., t=2), we could have simply re-run LidarLDA on the new dataset. The problem with this approach is that it might have identified a different set of clusters, making temporal comparisons challenging. To avoid this problem, we rely on the folding-in operation to compare how the relative abundance of each cluster has changed through time. 
+It would be tempting to analyze LiDAR data collected for the same area but in a different year (i.e., t=2) simply by re-running LidarLDA on this new dataset. The problem with this approach is that it might identify a different set of clusters, making temporal comparisons challenging. To avoid this problem, we rely on the folding-in operation to compare how the relative abundance of each cluster has changed through time. 
 
 In the folding-in operation, the characteristics of each cluster (captured by the $\Phi$ matrix) are kept constant and only the relative abundances of these clusters (capture by the $\Theta$ matrix) are re-estimated. As a result, assuming the grid cells were defined in a comparable way in both time periods, we can directly compare the relative abundances at time 1 (i.e., $\Theta_{t=1}$) with those from time 2 (i.e., $\Theta_{t=2}$). To perform this operation, we will rely on the function `LidarLDA_foldin`. As illustrated below, we will need the posterior mean (or posterior samples) of the $\Phi$ matrix, as estimated from the analysis of data at time t=1 using LidarLDA. 
 
 ```{r, eval=FALSE }
+#data for t=2
+
+colnames(sim_y5_t2) #this dataset is provided as part of the LidarLDA package
+colnames(sim_n5_t2) #this dataset is provided as part of the LidarLDA package
+
 #remove unnecessary columns
 ind=which(colnames(sim_y5_t2)%in%c('x','y','topo'))
 y_t2=sim_y5_t2[,-ind]
@@ -159,7 +164,7 @@ plot(Model.Results.t2$llk,type='l',xlab='Iterations',
      ylab='Log-likelihood')
 ```
 
-By spatially visualizing the relative abundances of each cluster at time t=2, we can notice that there has been substantial spatial change. For example, all the clusters have moved upward, with expansion of the cluster that dominated the lowlands (i.e., green cluster) and shrinkage of the highland area dominated by the orange cluster.
+By spatially visualizing the relative abundances of each cluster at time t=2, we can notice that there has been substantial spatial change. For example, all the clusters have moved upward, with spatial expansion of the cluster that dominated the lowland areas (i.e., green cluster) and shrinkage of the highland area dominated by the orange cluster.
 
 ```{r }
 theta=Model.Results.t2$theta
@@ -193,7 +198,7 @@ We start by assuming that we have a matrix called `lidar_data` which holds the n
 ```{r }
 library(LidarLDA)
 
-dim(lidar_data)
+dim(lidar_data) #this dataset is contained within the LidarLDA package
 colnames(lidar_data)
 ```
 
@@ -216,7 +221,7 @@ coord=dat2[,-ind]
 dat3=dat2[,ind]
 ```
 
-I create the matrices `y` and `n`, containing the number of returned light pulses and incoming light pulses, respectively, for each pixel and each height bin.
+I then create the matrices `y` and `n`, containing the number of returned light pulses and incoming light pulses, respectively, for each pixel and each height bin.
 
 ```{r }
 y=z=dat3
