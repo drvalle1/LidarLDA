@@ -2,6 +2,7 @@
 
 export(LidarLDA)
 export(LidarLDA_foldin)
+import(Rcpp)
 importFrom(stats,dbinom)
 importFrom(stats,rbeta)
 importFrom(stats,rmultinom)
