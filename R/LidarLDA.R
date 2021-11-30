@@ -19,6 +19,8 @@ NULL
 #' @param nburn number of iterations to discard as burn in
 #' @param theta.post should samples from the posterior distribution for theta be returned (TRUE or FALSE)? If FALSE, just the posterior mean is returned
 #' @param phi.post should samples from the posterior distribution for phi be returned (TRUE or FALSE)? If FALSE, just the posterior mean is returned
+#' @param theta.init initial values, if available, for the P x nclust theta matrix. Default value for theta.init is NULL.
+#' @param phi.init initial values, if available, for the nclust x H phi matrix. Default value for phi.init is NULL.
 #'
 #' @return This function returns a list containing several elements:
 #'               \itemize{
@@ -38,7 +40,8 @@ NULL
 #' @export
 
 LidarLDA=function(y,n,nclust,a.phi,b.phi,gamma,ngibbs,nburn,
-                     theta.post,phi.post){
+                  theta.post,phi.post,
+                  theta.init=NULL,phi.init=NULL){
   #useful stuff
   npix=nrow(y)
   nheight=ncol(y)
@@ -47,8 +50,10 @@ LidarLDA=function(y,n,nclust,a.phi,b.phi,gamma,ngibbs,nburn,
   NminusY=n-y
 
   #initial values
-  theta=matrix(1/nclust,npix,nheight)
-  phi=matrix(0.5,nclust,nheight)
+  if (is.null(theta.init))  theta=matrix(1/nclust,npix,nheight)
+  if (!is.null(theta.init)) theta=theta.init
+  if (is.null(phi.init))    phi=matrix(0.5,nclust,nheight)
+  if (!is.null(phi.init))   phi=phi.init
 
   array.LSKP=array(NA,dim=c(npix,nheight,nclust,2))
   prob1=rep(1/nclust,nclust)

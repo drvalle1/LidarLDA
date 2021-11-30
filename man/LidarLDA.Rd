@@ -14,7 +14,9 @@ LidarLDA(
   ngibbs,
   nburn,
   theta.post,
-  phi.post
+  phi.post,
+  theta.init = NULL,
+  phi.init = NULL
 )
 }
 \arguments{
@@ -37,6 +39,10 @@ LidarLDA(
 \item{theta.post}{should samples from the posterior distribution for theta be returned (TRUE or FALSE)? If FALSE, just the posterior mean is returned}
 
 \item{phi.post}{should samples from the posterior distribution for phi be returned (TRUE or FALSE)? If FALSE, just the posterior mean is returned}
+
+\item{theta.init}{initial values, if available, for the P x nclust theta matrix. Default value for theta.init is NULL.}
+
+\item{phi.init}{initial values, if available, for the nclust x H phi matrix. Default value for phi.init is NULL.}
 }
 \value{
 This function returns a list containing several elements:
