@@ -67,7 +67,8 @@ LidarLDA_foldin=function(y,n,nclust,gamma,ngibbs,nburn,
   # plot(theta,k1)
 
   #to store outcomes from gibbs sampler
-  theta.out=matrix(NA,ngibbs,nclust*npix)
+  if ( theta.post) theta.out=matrix(NA,ngibbs,nclust*npix)
+  if (!theta.post) theta.out=matrix(0,nclust,npix)
   llk=rep(NA,ngibbs)
 
   #run gibbs sampler
@@ -108,14 +109,16 @@ LidarLDA_foldin=function(y,n,nclust,gamma,ngibbs,nburn,
 
     #calculate logl and store results
     llk[i]=sum(dbinom(y,size=n,prob=prob,log=T))
-    theta.out[i,]=theta
+    
+    if ( theta.post) theta.out[i,]=theta
+    if (!theta.post & i>nburn) theta.out=theta.out+theta
   }
+  
   res=list(llk=llk)
   seq1=nburn:ngibbs
   if (theta.post)  res$theta=theta.out[seq1,]
   if (!theta.post) {
-    tmp=colMeans(theta.out[seq1,])
-    res$theta=matrix(tmp,npix,nclust)
+    res$theta=theta.out/(ngibbs-nburn) #calculating posterior mean
   }
   res
 }
