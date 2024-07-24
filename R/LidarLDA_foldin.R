@@ -68,7 +68,7 @@ LidarLDA_foldin=function(y,n,nclust,gamma,ngibbs,nburn,
 
   #to store outcomes from gibbs sampler
   if ( theta.post) theta.out=matrix(NA,ngibbs,nclust*npix)
-  if (!theta.post) theta.out=matrix(0,nclust,npix)
+  if (!theta.post) theta.out=matrix(0,npix,nclust)
   llk=rep(NA,ngibbs)
 
   #run gibbs sampler
